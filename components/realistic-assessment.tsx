@@ -741,6 +741,15 @@ function AssessmentSummary({ result }: { result: AssessmentResult }) {
                     <BookOpen className="h-5 w-5" />
                     Start Data Science 101
                   </Button>
+                ) : result.subject === 'Algebra' && selectedPlan === 'easy' ? (
+                  <Button 
+                    size="lg" 
+                    className="w-full sm:flex-1 gap-2 text-base h-12 bg-blue-600 hover:bg-blue-700"
+                    onClick={() => router.push('/algebra-lessons')}
+                  >
+                    <BookOpen className="h-5 w-5" />
+                    Start Algebra Foundation
+                  </Button>
                 ) : (
                   <Link href="/dashboard" className="w-full sm:flex-1">
                     <Button size="lg" className="w-full gap-2 text-base h-12 bg-primary hover:bg-primary/90">
