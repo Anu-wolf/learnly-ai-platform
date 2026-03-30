@@ -30,23 +30,30 @@ import {
   Download,
   Share2,
   Heart,
+  Rocket,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { AIAvatar } from '@/components/ai-avatar'
 
 interface ReportProps {
+  topic?: string
   score?: number
   accuracy?: number
   timeTaken?: number
   stressLevel?: 'low' | 'moderate' | 'high'
+  weakAreas?: string[]
+  strongAreas?: string[]
 }
 
 export function RealisticReport({
+  topic = "Data Science",
   score = 78,
   accuracy = 85,
   timeTaken = 1520,
   stressLevel = 'moderate',
+  weakAreas = ["Pandas", "Matplotlib"],
+  strongAreas = ["Python Basics", "NumPy"],
 }: ReportProps) {
   const [date, setDate] = useState("")
 
@@ -159,19 +166,26 @@ Keep learning and improving!
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-4">
-          <Button variant="outline" onClick={handleDownload}>
+        <div className="flex flex-wrap gap-4">
+          <Link href={`/lesson/${topic.toLowerCase().replace(/\s+/g, '-')}?performance=${score > 80 ? 'HIGH' : score > 50 ? 'MEDIUM' : 'LOW'}&stress=${stressLevel.toUpperCase()}&weak=${weakAreas.join(',')}&strong=${strongAreas.join(',')}`}>
+            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 shadow-lg shadow-primary/20">
+              <Rocket className="h-4 w-4 mr-2" />
+              Start Lesson 🚀
+            </Button>
+          </Link>
+
+          <Button variant="outline" onClick={handleDownload} className="border-border hover:bg-muted">
             <Download className="h-4 w-4 mr-2" />
             Download Report
           </Button>
 
-          <Button variant="outline" onClick={handleShare}>
+          <Button variant="outline" onClick={handleShare} className="border-border hover:bg-muted">
             <Share2 className="h-4 w-4 mr-2" />
             Share with Teacher
           </Button>
 
           <Link href="/assessment">
-            <Button>
+            <Button variant="ghost" className="text-muted-foreground hover:text-foreground">
               <Zap className="h-4 w-4 mr-2" />
               New Assessment
             </Button>
