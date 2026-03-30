@@ -1,6 +1,7 @@
 
 'use client'
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { toast } from "sonner"
 import Link from 'next/link'
 import { Clock, ChevronRight, ChevronLeft, AlertCircle, Calculator, Database, BrainCircuit, BarChart, Check, BookOpen, Target, Calendar } from 'lucide-react'
@@ -243,6 +244,7 @@ function calculateStressLevel(
 }
 
 export function RealisticAssessment() {
+  const router = useRouter()
   const [state, setState] = useState<AssessmentState>({
     currentQuestion: 0,
     answers: {},
@@ -599,6 +601,7 @@ export function RealisticAssessment() {
 }
 
 function AssessmentSummary({ result }: { result: AssessmentResult }) {
+  const router = useRouter()
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null)
 
   // Determine recommended level based on score
@@ -729,12 +732,23 @@ function AssessmentSummary({ result }: { result: AssessmentResult }) {
                     Retake Assessment
                   </Button>
                 </Link>
-                <Link href="/dashboard" className="w-full sm:flex-1">
-                  <Button size="lg" className="w-full gap-2 text-base h-12 bg-primary hover:bg-primary/90">
+                {result.subject === 'Data Science' && selectedPlan === 'easy' ? (
+                  <Button 
+                    size="lg" 
+                    className="w-full sm:flex-1 gap-2 text-base h-12 bg-green-600 hover:bg-green-700"
+                    onClick={() => router.push('/data-science-lesson')}
+                  >
                     <BookOpen className="h-5 w-5" />
-                    Start {selectedPlan ? STUDY_PLANS[result.subject]?.find(p => p.level === selectedPlan)?.title : 'Learning'}
+                    Start Data Science 101
                   </Button>
-                </Link>
+                ) : (
+                  <Link href="/dashboard" className="w-full sm:flex-1">
+                    <Button size="lg" className="w-full gap-2 text-base h-12 bg-primary hover:bg-primary/90">
+                      <BookOpen className="h-5 w-5" />
+                      Start {selectedPlan ? STUDY_PLANS[result.subject]?.find(p => p.level === selectedPlan)?.title : 'Learning'}
+                    </Button>
+                  </Link>
+                )}
               </div>
             </CardContent>
           </Card>
