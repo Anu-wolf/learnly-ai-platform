@@ -10,10 +10,13 @@ export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session) {
+      console.log("AI Route: No session found!");
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
     const { stress, hours, confidence } = await req.json();
+    console.log("AI Route: Generating plan for", session.user?.email);
+    console.log("AI Route: Metrics", { stress, hours, confidence });
 
     const prompt = `You are a deeply empathetic AI tutor for "LEARNLY StudyLab", specifically designed to help students manage academic pressure while accelerating their learning. 
 A student named ${session.user?.name} has requested a study plan. 
