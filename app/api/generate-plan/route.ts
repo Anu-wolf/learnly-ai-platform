@@ -1,25 +1,21 @@
 import { generateText } from "ai";
 import { google } from "@ai-sdk/google";
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      console.log("AI Route: No session found!");
-      return new NextResponse("Unauthorized", { status: 401 });
+    const { stress, hours, confidence, userName } = await req.json();
+
+    if (!stress || !hours || !confidence) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const { stress, hours, confidence } = await req.json();
-    console.log("AI Route: Generating plan for", session.user?.email);
-    console.log("AI Route: Metrics", { stress, hours, confidence });
+    const studentName = userName || "Student";
 
     const prompt = `You are a deeply empathetic AI tutor for "LEARNLY StudyLab", specifically designed to help students manage academic pressure while accelerating their learning. 
-A student named ${session.user?.name} has requested a study plan. 
+A student named ${studentName} has requested a study plan. 
 Their current state:
 - Stress Level: ${stress}%
 - Confidence Level: ${confidence}%
@@ -41,6 +37,6 @@ Keep the output clean, highly actionable, structured with markdown headings and 
     return NextResponse.json({ plan: text });
   } catch (error) {
     console.error("AI Generation Error:", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json({ error: "Failed to generate plan. Please try again." }, { status: 500 });
   }
 }

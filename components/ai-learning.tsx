@@ -1,12 +1,14 @@
 "use client"
 
 import { useState } from "react"
+import { useSession } from "next-auth/react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import ReactMarkdown from "react-markdown"
 
 export function AILearning() {
+    const { data: session } = useSession()
     const [stress, setStress] = useState(40)
     const [hours, setHours] = useState(4)
     const [confidence, setConfidence] = useState(50)
@@ -20,19 +22,25 @@ export function AILearning() {
             const res = await fetch("/api/generate-plan", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ stress, hours, confidence }),
+                body: JSON.stringify({ 
+                    stress, 
+                    hours, 
+                    confidence,
+                    userName: session?.user?.name || "Student"
+                }),
             });
 
-            if (res.ok) {
-                const data = await res.json();
+            const data = await res.json();
+
+            if (res.ok && data.plan) {
                 setResult(data.plan);
             } else {
-                setResult("Error generating plan. Make sure you are logged in.");
+                setResult(`⚠️ ${data.error || "Something went wrong. Please try again."}`);
             }
         } catch (error) {
-            setResult("Failed to connect to AI server.");
+            setResult("⚠️ Failed to connect to AI server. Please check your connection.");
         } finally {
-            setIsLoading(false);
+            setIsLoading(false)
         }
     }
 
