@@ -34,18 +34,18 @@ export function AILearning() {
 
         const utterance = new SpeechSynthesisUtterance(cleanText)
         
-        // Find a "fun" but "mellow" voice (usually Google US English or Natural voices)
+        // Prioritize a "Female" mellow/fun voice
         const voices = window.speechSynthesis.getVoices()
-        const premiumVoice = voices.find(v => 
+        const femaleVoice = voices.find(v => 
             v.lang.startsWith('en') && 
-            (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Premium'))
+            (v.name.includes('Female') || v.name.includes('Zira') || v.name.includes('Google UK English') || v.name.includes('Natural'))
         ) || voices.find(v => v.lang.startsWith('en'))
         
-        if (premiumVoice) utterance.voice = premiumVoice
+        if (femaleVoice) utterance.voice = femaleVoice
 
         // Mellow but Fun: Slightly lower rate, slightly higher pitch
-        utterance.rate = 1.05 // Persuasive speed
-        utterance.pitch = 1.15 // Fun/Positive pitch
+        utterance.rate = 1.02 // Empathetic and clear
+        utterance.pitch = 1.25 // Slightly more "fun/positive" feminine pitch
         
         utterance.onend = () => setIsSpeaking(false)
         utterance.onerror = () => setIsSpeaking(false)
