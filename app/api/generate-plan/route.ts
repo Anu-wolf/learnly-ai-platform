@@ -23,17 +23,17 @@ A student named ${studentName} needs a personalized study plan.
 - Confidence Level: ${confidence}%
 - Available Study Time: ${hours} hours
 
-INSTRUCTIONS FOR FORMATTING & TONE:
-1. **TONE**: Extremely upbeat, supportive, and uses emojis (✨, 🚀, 💡, 🌈, 🧘‍♀️).
-2. **SPACING**: Use DOUBLE NEWLINES between every individual point and paragraph. Avoid dense blocks of text.
-3. **GREETING**: Start with a warm, fun 2-sentence greeting.
+CRITICAL FORMATTING RULES:
+1. **NO HTML**: Do NOT use <br> or any other HTML tags.
+2. **SPACING**: Use EXACTLY two newlines (a full empty line) between every paragraph and bullet point for a "spaced-out" look.
+3. **EMOJIS**: Use 1-2 emojis per section to keep it fun (✨, 🚀, 💡).
 
 CONTENT STRUCTURE:
-- **Your Game Plan ✨**: A short, persuasive paragraph on why they will crush this session.
-- **The Flow 🌊 (Time Blocks)**: Step-by-step Pomodoro/Deep Work schedule for ${hours} hours. Space each block out clearly.
-- **Wellness Check ✅**: Mandatory fun relaxation tip since their stress is at ${stress}%.
+- **Your Game Plan ✨**: An upbeat, persuasive paragraph on why they will crush this session.
+- **The Flow 🌊**: Step-by-step Pomodoro/Deep Work schedule. Space each block out clearly with empty lines.
+- **Wellness Check ✅**: One fun relaxation tip.
 
-Stay positive, spaced-out, and super engaging!`;
+Stay high-energy, persuasive, and strictly use Markdown only!`;
 
     const plan = await generateWithFallback(prompt, apiKey);
     return NextResponse.json({ plan });

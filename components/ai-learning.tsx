@@ -26,9 +26,11 @@ export function AILearning() {
 
         if (!result) return
 
-        // Clean markdown for better speech synthesis
+        // Clean markdown and EMOJIS for better speech synthesis
         const cleanText = result
+            .replace(/<br\s*\/?>/gi, '. ') // Replace <br> with dots
             .replace(/[#*`_~]/g, '') // Remove markdown characters
+            .replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '') // Remove emojis
             .replace(/\[.*?\]\(.*?\)/g, '') // Remove links
             .replace(/\n+/g, '. ') // Replace newlines with dots for pausing
 
@@ -38,14 +40,14 @@ export function AILearning() {
         const voices = window.speechSynthesis.getVoices()
         const femaleVoice = voices.find(v => 
             v.lang.startsWith('en') && 
-            (v.name.includes('Female') || v.name.includes('Zira') || v.name.includes('Google UK English') || v.name.includes('Natural'))
-        ) || voices.find(v => v.lang.startsWith('en'))
+            (v.name.includes('Female') || v.name.includes('Zira') || v.name.includes('Natural'))
+        ) || voices.find(v => v.name.includes('Google US English')) || voices.find(v => v.lang.startsWith('en'))
         
         if (femaleVoice) utterance.voice = femaleVoice
 
-        // Mellow but Fun: Slightly lower rate, slightly higher pitch
-        utterance.rate = 1.02 // Empathetic and clear
-        utterance.pitch = 1.25 // Slightly more "fun/positive" feminine pitch
+        // More "Alive" settings: Slightly faster and higher pitch
+        utterance.rate = 1.08 // Slightly more energetic flow
+        utterance.pitch = 1.3 // More "Fun/Positive" pitch
         
         utterance.onend = () => setIsSpeaking(false)
         utterance.onerror = () => setIsSpeaking(false)
