@@ -33,8 +33,19 @@ export function AILearning() {
             .replace(/\n+/g, '. ') // Replace newlines with dots for pausing
 
         const utterance = new SpeechSynthesisUtterance(cleanText)
-        utterance.rate = 0.95 // Slightly slower for better empathy
-        utterance.pitch = 1.0
+        
+        // Find a "fun" but "mellow" voice (usually Google US English or Natural voices)
+        const voices = window.speechSynthesis.getVoices()
+        const premiumVoice = voices.find(v => 
+            v.lang.startsWith('en') && 
+            (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Premium'))
+        ) || voices.find(v => v.lang.startsWith('en'))
+        
+        if (premiumVoice) utterance.voice = premiumVoice
+
+        // Mellow but Fun: Slightly lower rate, slightly higher pitch
+        utterance.rate = 1.05 // Persuasive speed
+        utterance.pitch = 1.15 // Fun/Positive pitch
         
         utterance.onend = () => setIsSpeaking(false)
         utterance.onerror = () => setIsSpeaking(false)
