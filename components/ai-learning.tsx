@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import ReactMarkdown from "react-markdown"
+import { Volume2, Square, Loader2 } from "lucide-react"
 
 export function AILearning() {
     const { data: session } = useSession()
@@ -14,10 +15,42 @@ export function AILearning() {
     const [confidence, setConfidence] = useState(50)
     const [result, setResult] = useState<string | null>(null)
     const [isLoading, setIsLoading] = useState(false)
+    const [isSpeaking, setIsSpeaking] = useState(false)
+
+    const toggleSpeech = () => {
+        if (isSpeaking) {
+            window.speechSynthesis.cancel()
+            setIsSpeaking(false)
+            return
+        }
+
+        if (!result) return
+
+        // Clean markdown for better speech synthesis
+        const cleanText = result
+            .replace(/[#*`_~]/g, '') // Remove markdown characters
+            .replace(/\[.*?\]\(.*?\)/g, '') // Remove links
+            .replace(/\n+/g, '. ') // Replace newlines with dots for pausing
+
+        const utterance = new SpeechSynthesisUtterance(cleanText)
+        utterance.rate = 0.95 // Slightly slower for better empathy
+        utterance.pitch = 1.0
+        
+        utterance.onend = () => setIsSpeaking(false)
+        utterance.onerror = () => setIsSpeaking(false)
+
+        window.speechSynthesis.speak(utterance)
+        setIsSpeaking(true)
+    }
 
     const generatePlan = async () => {
         setIsLoading(true)
         setResult(null)
+        if (isSpeaking) {
+            window.speechSynthesis.cancel()
+            setIsSpeaking(false)
+        }
+        
         try {
             const res = await fetch("/api/generate-plan", {
                 method: "POST",
@@ -45,62 +78,98 @@ export function AILearning() {
     }
 
     return (
-        <Card className="max-w-xl mx-auto border-border">
+        <Card className="max-w-xl mx-auto border-border shadow-sm">
             <CardHeader>
-                <CardTitle>AI Learning Path Generator</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                    <Volume2 className="h-5 w-5 text-secondary" />
+                    AI Learning Path Generator
+                </CardTitle>
             </CardHeader>
 
             <CardContent className="space-y-6">
                 <div>
-                    <p className="text-sm font-medium mb-2 flex justify-between">
+                    <p className="text-sm font-medium mb-2 flex justify-between text-muted-foreground">
                         <span>Stress Level</span>
-                        <span className={stress > 70 ? "text-destructive" : ""}>{stress}%</span>
+                        <span className={stress > 70 ? "text-destructive font-bold" : "text-foreground"}>{stress}%</span>
                     </p>
                     <Slider
                         defaultValue={[stress]}
                         max={100}
                         step={1}
                         onValueChange={(v) => setStress(v[0])}
+                        className="py-4"
                     />
                 </div>
 
                 <div>
-                    <p className="text-sm font-medium mb-2 flex justify-between">
+                    <p className="text-sm font-medium mb-2 flex justify-between text-muted-foreground">
                         <span>Study Time</span>
-                        <span>{hours} Hours</span>
+                        <span className="text-foreground">{hours} Hours</span>
                     </p>
                     <Slider
                         defaultValue={[hours]}
                         max={10}
                         step={1}
                         onValueChange={(v) => setHours(v[0])}
+                        className="py-4"
                     />
                 </div>
 
                 <div>
-                    <p className="text-sm font-medium mb-2 flex justify-between">
+                    <p className="text-sm font-medium mb-2 flex justify-between text-muted-foreground">
                         <span>Confidence in Topic</span>
-                        <span>{confidence}%</span>
+                        <span className="text-foreground">{confidence}%</span>
                     </p>
                     <Slider
                         defaultValue={[confidence]}
                         max={100}
                         step={1}
                         onValueChange={(v) => setConfidence(v[0])}
+                        className="py-4"
                     />
                 </div>
 
                 <Button 
-                    className="w-full bg-secondary hover:bg-secondary/90 text-primary-foreground" 
+                    className="w-full bg-secondary hover:bg-secondary/90 text-primary-foreground h-12 shadow-md hover:shadow-lg transition-all" 
                     onClick={generatePlan} 
                     disabled={isLoading}
                 >
-                    {isLoading ? "Generating your perfect plan..." : "Generate AI Learning Plan"}
+                    {isLoading ? (
+                        <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Analyzing your state...
+                        </>
+                    ) : (
+                        "Generate AI Learning Plan"
+                    )}
                 </Button>
 
                 {result && (
-                    <div className="p-5 rounded-lg bg-card border text-sm prose prose-sm max-w-none text-foreground prose-headings:text-foreground prose-strong:text-secondary">
-                        <ReactMarkdown>{result}</ReactMarkdown>
+                    <div className="space-y-4">
+                        <div className="p-5 rounded-xl bg-card/50 border border-border text-sm prose prose-sm max-w-none text-foreground prose-headings:text-foreground prose-strong:text-secondary animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <ReactMarkdown>{result}</ReactMarkdown>
+                        </div>
+                        
+                        {!result.startsWith("⚠️") && (
+                            <Button
+                                variant="outline"
+                                className={`w-full flex items-center justify-center gap-2 h-11 border-secondary/20 hover:border-secondary/50 hover:bg-secondary/5 transition-all
+                                    ${isSpeaking ? 'text-destructive border-destructive/20 hover:border-destructive/50' : 'text-secondary'}`}
+                                onClick={toggleSpeech}
+                            >
+                                {isSpeaking ? (
+                                    <>
+                                        <Square className="h-4 w-4 fill-current" />
+                                        Stop Reading Plan
+                                    </>
+                                ) : (
+                                    <>
+                                        <Volume2 className="h-4 w-4" />
+                                        Listen to My Plan
+                                    </>
+                                )}
+                            </Button>
+                        )}
                     </div>
                 )}
             </CardContent>
