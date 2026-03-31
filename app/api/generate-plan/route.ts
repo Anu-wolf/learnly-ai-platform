@@ -23,13 +23,14 @@ A student named ${studentName} needs a personalized study plan.
 - Confidence Level: ${confidence}%
 - Available Study Time: ${hours} hours
 
-Generate a Markdown-formatted plan with:
-1. **Mental State Acknowledgment**: 2 empathetic sentences based on their stress (${stress}%) and confidence (${confidence}%).
-2. **Study Strategy**: One paragraph of actionable advice based on their confidence level.
-3. **Time Blocks**: Pomodoro or Deep Work schedule for ${hours} hours.
-4. **Wellness**: Specific break reminders. If stress > 60%, include a recommended relaxation exercise.
+INSTRUCTIONS:
+1. Start with a VERY CONCISE greeting (max 2 sentences) acknowledging their stress and confidence.
+2. Provide a detailed Markdown-formatted plan with:
+   - **Study Strategy**: One paragraph of actionable advice.
+   - **Time Blocks**: A step-by-step Pomodoro or Deep Work schedule for the full ${hours} hours.
+   - **Wellness**: Specific break reminders and relaxation exercises (mandatory if stress > 60%).
 
-Keep it structured, warm, and encouraging.`;
+Stay encouraging but prioritize the actual schedule content.`;
 
     const plan = await generateWithFallback(prompt, apiKey);
     return NextResponse.json({ plan });
